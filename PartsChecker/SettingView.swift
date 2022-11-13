@@ -14,9 +14,17 @@ struct SettingView: View {
             VStack(){
                 Spacer()
                 VStack(alignment: .leading){
-                    Text("サーバー URL")
+                    Text("GET URL")
                     //.padding()
-                    TextField("Server URL", text: $vm.baseURL)
+                    TextField("GET URL", text: $vm.getURL)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    //.padding()
+                }
+                .padding()
+                VStack(alignment: .leading){
+                    Text("POST URL")
+                    //.padding()
+                    TextField("POST URL", text: $vm.postURL)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     //.padding()
                 }
@@ -24,12 +32,6 @@ struct SettingView: View {
                 VStack(alignment: .leading) {
                     Text("認証コード")
                     TextField("Auth Code", text: $vm.authCode)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                .padding()
-                VStack(alignment: .leading) {
-                    Text("API クエリ")
-                    TextField("API Query", text: $vm.query)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 .padding()

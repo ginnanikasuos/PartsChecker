@@ -37,6 +37,8 @@ enum scanStatus {
 
 @MainActor
 final class ViewModel: ObservableObject {
+    // APIClient インスタンス
+    private var apiClient = APIClient()
     // スキャンステータス
     @Published var scanState: scanStatus = .scanCartridge
     // @Published の変数が変更されると全てのViewで更新される
@@ -134,17 +136,21 @@ final class ViewModel: ObservableObject {
         }
         // カートリッジ番号のスキャン
         if scanState == .scanCartridge {
+            print("Scan Status : \(scanState), First Char : \(cartridgeFirstChar)")
             if cartridgeFirstChar != "" {
                 guard let regex = try? NSRegularExpression(pattern: cartridgeFirstChar) else {
-                    string = "カートリッジ先頭文字列が不正です。"
+                    string = "カートリッジ検索文字列が不正です。"
                     return string
                 }
-                
+                print("String : \(string)")
                 // 正規表現との比較
                 let checkingResults = regex.matches(in: string, range: NSRange(location: 0, length: string.count))
+                print("Results Count : \(checkingResults.count)")
                 if checkingResults.count > 0 {
                     cartridgeNo = string
                     scanState = .getCartridge
+                } else {
+                    string = ""
                 }
             }
         }
@@ -186,16 +192,15 @@ final class ViewModel: ObservableObject {
     var naviText: String = ""
     
     // API 関係
-    // baseURL
-    @AppStorage("baseURL") var baseURL = "https:/ikasuos.org/parts-api/api/"
+    // GET URL
+    @AppStorage("getURL") var getURL = "https:/ikasuos.org/parts-api/api/cartridge"
     // POST URL+Query
-    @AppStorage("postURL") var postURL =
+    @AppStorage("postURL") var postURL = "https:/ikasuos.org/parts-api/api/check_result"
     // 秘密キー
     @AppStorage("authCode") var authCode = "Bearer 3|ZVefJvULsY08unq4x2NadT5QkLTHrDHWjt592mos"
     // カートリッジの先頭文字列
-    @AppStorage("cartridgeFirstChar") var cartridgeFirstChar = "^[SSY|ALY|ZSY]-[0-9]{3}-[0-9]{7}[A-Z]"
-    // API クエリ
-    @AppStorage("query") var query = "SSY-"
+    @AppStorage("cartridgeFirstChar") var cartridgeFirstChar = "^(SSY)|^(ALY)|^(ZSY)-[0-9]{3}-[0-9]{7}[A-Z]"
+    
     // カートリッジナンバー
     var cartridgeNo = ""
     // 部品規格
@@ -203,6 +208,14 @@ final class ViewModel: ObservableObject {
     // サーバーからのレスポンスデータ
     var responseData: [Cartridge]?
     
+    // サーバーへデータ送信
+    func sendData() {
+        if cartridgeNo != "" {
+            apiClient.taskApiGet(query: "cartridge=\(cartridgeNo)")
+        } else {
+            print("No Cartridge Number")
+        }
+    }
     // 読み込んだテキストフィールドのデータをクリア
     func fieldClear() {
         if partsStandard != "" {
@@ -214,6 +227,7 @@ final class ViewModel: ObservableObject {
         scanEnable = true
     }
     
+    //
     // スキャン開始
     func scanStart() {
         scanEnable = true

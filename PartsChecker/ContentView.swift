@@ -19,12 +19,8 @@ struct ContentView: View {
     
     @State var showingSettingView: Bool = false
     
-    
     // フォントの統一
     private let fontType: Font = .headline
-    
-    // APIClient インスタンス
-    private var apiClient = APIClient()
     
     // スキャンできるかの状況に応じて状態遷移
     var body: some View {
@@ -143,7 +139,7 @@ struct ContentView: View {
                             }
                             Spacer()
                             Button(action: {
-                                apiClient.taskApiGet(query: "cartridge=\(vm.cartridgeNo)")
+                                vm.sendData()
                             }){
                                 Text("送信")
                                     .font(fontType)

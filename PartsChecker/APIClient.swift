@@ -48,7 +48,7 @@ final class APIClient {
     }
     
     func apiGet(query: String) async throws {
-        guard let url = URL(string: vm.baseURL + "?query=\(query)") else {
+        guard let url = URL(string: vm.getURL + query) else {
             throw APIClientError.invalidURL
         }
         // Authorization Code の確認
@@ -94,7 +94,7 @@ final class APIClient {
             throw APIClientError.authorizationError
         }
         // サーバーURL確認
-        guard let url = URL(string: vm.baseURL) else {
+        guard let url = URL(string: vm.postURL) else {
             throw APIClientError.invalidURL }
         // リクエストインスタンス作成
         var request = URLRequest.init(url: url)
